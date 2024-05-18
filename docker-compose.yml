@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    networks:
+      - monitoring
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics
+    ports:
+      - "8428:8428"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - victoria-metrics
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
